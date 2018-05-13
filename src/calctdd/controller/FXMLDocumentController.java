@@ -71,7 +71,7 @@ public class FXMLDocumentController implements Initializable {
     private Button plusBtn;
     
     @FXML
-    private Button plusMinusBtn;
+    private Button doubleDecimalBtn;
     
     @FXML
     private Button zeroBtn;
@@ -81,19 +81,24 @@ public class FXMLDocumentController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        equalsBtn.getStyleClass().add("equals-button");
-        equalsBtn.setPickOnBounds(true);
-        
-        Region iconEquals =  new Region();
-        iconEquals.getStyleClass().add("icon-equals");
-        equalsBtn.setGraphic(iconEquals);
-        
-        plusBtn.getStyleClass().add("plus-button");
-        plusBtn.setPickOnBounds(true);
-        
-        Region iconPlus =  new Region();
-        iconPlus.getStyleClass().add("icon-plus");
-        plusBtn.setGraphic(iconPlus);
+        initializeButtonIconsSVG();
+    }
+    
+    private void initializeButtonIconsSVG(){
+        loadSVG(equalsBtn, "equals-button", "icon-equals");   
+        loadSVG(plusBtn, "plus-button", "icon-plus");
+        loadSVG(minusBtn, "minus-button", "icon-minus");
+        loadSVG(multBtn, "times-button", "icon-times");
+        loadSVG(divBtn, "divide-button", "icon-divide");
+        loadSVG(backSpaceBtn, "backspace-button", "icon-backspace");
+    }
+    
+    private void loadSVG(Button btn, String btnClass, String iconClass){
+        btn.getStyleClass().add(btnClass);
+        btn.setPickOnBounds(true);
+        Region icon = new Region();
+        icon.getStyleClass().add(iconClass);
+        btn.setGraphic(icon);
     }
     
 }

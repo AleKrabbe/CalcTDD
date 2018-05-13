@@ -22,6 +22,9 @@ public class CalcTDD extends Application {
     public void start(Stage stage) throws Exception {
         stage.setTitle("Calculadora TDD");
         stage.getIcons().add(new Image("calctdd/resources/calculator.png"));
+        stage.setResizable(false);
+        stage.setWidth(355);
+        stage.setHeight(530);
         
         Parent root = FXMLLoader.load(getClass().getResource("view/FXMLDocument.fxml"));
         root.getStylesheets().add(getClass().getResource("controller/css/myStyles.css").toExternalForm());

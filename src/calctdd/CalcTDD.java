@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package calctdd;
 
 import javafx.application.Application;
@@ -21,7 +16,7 @@ public class CalcTDD extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("Calculadora TDD");
-        stage.getIcons().add(new Image("calctdd/resources/calculator.png"));
+        stage.getIcons().add(new Image("calctdd/resources/app-icon.png"));
         stage.setResizable(false);
         stage.setWidth(355);
         stage.setHeight(530);

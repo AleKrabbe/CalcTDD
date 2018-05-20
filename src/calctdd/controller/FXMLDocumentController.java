@@ -31,11 +31,19 @@ public class FXMLDocumentController implements Initializable {
     private Button divBtn;
     @FXML
     private Button backSpaceBtn;
+    
+    private Boolean triggerOperation;
+    private String operation;
+    private int leftOperand;
+    private Boolean triggerOperationSecOperand;
 
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initializeButtonIconsSVG();
+        triggerOperationSecOperand = false;
+        triggerOperation = false;
+        operation = "None";
         resultTextField.setText("0");
         resultTextField.setTextFormatter(new TextFormatter<>(change -> 
             change.getControlNewText().length() <= 13 ? change : null));
@@ -71,6 +79,9 @@ public class FXMLDocumentController implements Initializable {
         }        
     }
     
+    public void clearField(){
+        resultTextField.setText("");}
+    
     public int getResult(){
         return Integer.parseInt(resultTextField.getText());
     }
@@ -82,46 +93,82 @@ public class FXMLDocumentController implements Initializable {
             
     @FXML
     public void handleDigitOnePress(ActionEvent event) {
+        if(triggerOperation && !triggerOperationSecOperand){
+            clearField();
+            triggerOperationSecOperand = true;
+        }
         appenToResult("1");
     }
             
     @FXML
     void handleDigitTwoPress(ActionEvent event) {
+        if(triggerOperation && !triggerOperationSecOperand){
+            clearField();
+            triggerOperationSecOperand = true;
+        }
         appenToResult("2");
     }
             
     @FXML
     void handleDigitThreePress(ActionEvent event) {
+        if(triggerOperation && !triggerOperationSecOperand){
+            clearField();
+            triggerOperationSecOperand = true;
+        }
         appenToResult("3");
     }
             
     @FXML
     void handleDigitFourPress(ActionEvent event) {
+        if(triggerOperation && !triggerOperationSecOperand){
+            clearField();
+            triggerOperationSecOperand = true;
+        }
         appenToResult("4");
     }
     
     @FXML
     void handleDigitFivePress(ActionEvent event) {
+        if(triggerOperation && !triggerOperationSecOperand){
+            clearField();
+            triggerOperationSecOperand = true;
+        }
         appenToResult("5");
     }
     
     @FXML
     void handleDigitSixPress(ActionEvent event) {
+        if(triggerOperation && !triggerOperationSecOperand){
+            clearField();
+            triggerOperationSecOperand = true;
+        }
         appenToResult("6");
     }    
     
     @FXML
     void handleDigitSevenPress(ActionEvent event) {
+        if(triggerOperation && !triggerOperationSecOperand){
+            clearField();
+            triggerOperationSecOperand = true;
+        }
         appenToResult("7");
     }
     
     @FXML
     void handleDigitEightPress(ActionEvent event) {
+        if(triggerOperation && !triggerOperationSecOperand){
+            clearField();
+            triggerOperationSecOperand = true;
+        }
         appenToResult("8");
     }
 
     @FXML
     void handleDigitNinePress(ActionEvent event) {
+        if(triggerOperation && !triggerOperationSecOperand){
+            clearField();
+            triggerOperationSecOperand = true;
+        }
         appenToResult("9");
     }
     
@@ -137,27 +184,46 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     void handleDivision(ActionEvent event) {
-        System.out.println("Need to implementTT");
+        if(!triggerOperation){
+            triggerOperation = true;
+            leftOperand = Integer.parseInt(resultTextField.getText());
+            appenToResult("÷");
+            operation = "÷";}
+        
     }
 
     @FXML
     void handleMultiplication(ActionEvent event) {
-        System.out.println("Need to implement");
+        if(!triggerOperation){
+            triggerOperation = true;
+            leftOperand = Integer.parseInt(resultTextField.getText());
+            appenToResult("*");
+            operation = "*";}
     }
 
     @FXML
     void handleSubtraction(ActionEvent event) {
-        System.out.println("Need to implement");
+        if(!triggerOperation){
+            triggerOperation = true;
+            leftOperand = Integer.parseInt(resultTextField.getText());
+            appenToResult("-");
+            operation = "-";}
+        
     }    
     
     @FXML
     void handleAddition(ActionEvent event) {
-        System.out.println("Need to implement");
+        if(!triggerOperation){
+            triggerOperation = true;
+            leftOperand = Integer.parseInt(resultTextField.getText());
+            appenToResult("+");
+            operation = "+";}
     }
     
     @FXML
     void handleEquals(ActionEvent event) {
-        System.out.println("Need to implement");
+        triggerOperation = true;
+        appenToResult("x");
     }
 
     @FXML

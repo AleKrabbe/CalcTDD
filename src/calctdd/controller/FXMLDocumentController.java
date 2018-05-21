@@ -75,14 +75,19 @@ public class FXMLDocumentController implements Initializable {
         btn.setGraphic(icon);
     }
     
+    //TODO: Refactor
     private void appenToResult(String ch){
         try {
             double result = Double.parseDouble(resultTextField.getText());
             if(result == 0){
-                resultTextField.setText(ch);
+                if (resultTextField.getText().contains(".")) {
+                    resultTextField.appendText(ch);
+                } else {
+                    resultTextField.setText(ch);
+                }
             } else {
                 if (shouldResetTextField) {
-                    if(".".equals(ch)){
+                    if (!resultTextField.getText().contains(".") && ".".equals(ch)){
                         resultTextField.appendText(ch);
                     } else {
                         resultTextField.setText(ch);
@@ -91,12 +96,14 @@ public class FXMLDocumentController implements Initializable {
                 } else {
                     if (!(resultTextField.getText().contains(".") && ".".equals(ch))){
                         resultTextField.appendText(ch);
+                    } else {
+                        resultTextField.setText(ch);
                     }
                 }
             }
         } catch (NumberFormatException e) {
             System.err.println("Not able to convert result into string.");
-        }        
+        }
     }
     
     public double getResult(){
@@ -109,6 +116,7 @@ public class FXMLDocumentController implements Initializable {
        resultTextField.setText(df.format(value));
     }
     
+    //TODO: Refactor
     public void setActiveOperator (Button btn) {
         if (btn == null) {
             if (lastActiveOperatorBtn != null){
@@ -126,6 +134,7 @@ public class FXMLDocumentController implements Initializable {
         }
     }
     
+    //TODO: Refactor
     public void resolveExpression(Operadores OP) {
         shouldResetTextField = true;
         if (curExpr == null) {
@@ -163,61 +172,77 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     public void handleDigitZeroPress(ActionEvent event) {
         appenToResult("0");
+        setActiveOperator(null);
     }
             
     @FXML
     public void handleDigitOnePress() {
         appenToResult("1");
+        setActiveOperator(null);
     }
             
     @FXML
     void handleDigitTwoPress(ActionEvent event) {
         appenToResult("2");
+        setActiveOperator(null);
     }
             
     @FXML
     void handleDigitThreePress(ActionEvent event) {
         appenToResult("3");
+        setActiveOperator(null);
     }
             
     @FXML
     void handleDigitFourPress(ActionEvent event) {
         appenToResult("4");
+        setActiveOperator(null);
     }
     
     @FXML
     void handleDigitFivePress(ActionEvent event) {
         appenToResult("5");
+        setActiveOperator(null);
     }
     
     @FXML
     void handleDigitSixPress(ActionEvent event) {
         appenToResult("6");
+        setActiveOperator(null);
     }    
     
     @FXML
     void handleDigitSevenPress(ActionEvent event) {
         appenToResult("7");
+        setActiveOperator(null);
     }
     
     @FXML
     void handleDigitEightPress(ActionEvent event) {
         appenToResult("8");
+        setActiveOperator(null);
     }
 
     @FXML
     void handleDigitNinePress(ActionEvent event) {
         appenToResult("9");
+        setActiveOperator(null);
     }
     
     @FXML
     void handleComma(ActionEvent event) {
-        appenToResult(".");
+        if (getResult() == 0) {
+            appenToResult("0.");
+        } else {
+            appenToResult(".");
+        }
+        setActiveOperator(null);
     }
     
     @FXML
     void handleDoubleZeroes(ActionEvent event) {
         appenToResult("00");
+        setActiveOperator(null);
     }
     
     @FXML
@@ -252,17 +277,34 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     void handleBackspace(ActionEvent event) {
-        System.out.println("Need to implement");
+        String newText = resultTextField.getText().substring(0, resultTextField.getText().length()-1);
+        if (!newText.isEmpty()){
+            try {
+                double result = Double.valueOf(newText);
+                
+            } catch (NumberFormatException e) {
+                System.err.println("Impossivel converter string em double");
+            }
+        } else {
+            newText = "0";
+        }
+        resultTextField.setText(newText);
     }
 
     @FXML
     void handleClearAll(ActionEvent event) {
-        System.out.println("Need to implement");
+        setResult(0.0);
+        curExpr = null;
+        lastExpr = null;
+        shouldResetTextField = false;
+        setActiveOperator(null);
     }
 
     @FXML
     void handleClearEntry(ActionEvent event) {
-        System.out.println("Need to implement");
+        setResult(0.0);
+        shouldResetTextField = false;
+        setActiveOperator(null);
     }
     
 }

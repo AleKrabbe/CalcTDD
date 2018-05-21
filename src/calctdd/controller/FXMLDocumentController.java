@@ -4,6 +4,9 @@ import calctdd.exceptions.ExpressionNotCompleteException;
 import calctdd.model.Entry;
 import calctdd.model.Expression;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,14 +42,15 @@ public class FXMLDocumentController implements Initializable {
         SUM, DIV, SUB, MUL, EQUALS;
     }
     
-    private Button lastActiveOperator;
-    private Expression curExpr;
+    private Button lastActiveOperatorBtn;
+    private Expression curExpr, lastExpr;
     private boolean shouldResetTextField;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        lastActiveOperator = null;
+        lastActiveOperatorBtn = null;
         curExpr = null;
+        lastExpr = null;
         shouldResetTextField = false;
         initializeButtonIconsSVG();
         resultTextField.setText("0");
@@ -78,10 +82,16 @@ public class FXMLDocumentController implements Initializable {
                 resultTextField.setText(ch);
             } else {
                 if (shouldResetTextField) {
-                    resultTextField.setText(ch);
+                    if(".".equals(ch)){
+                        resultTextField.appendText(ch);
+                    } else {
+                        resultTextField.setText(ch);
+                    }
                     shouldResetTextField = false;
                 } else {
-                    resultTextField.appendText(ch);
+                    if (!(resultTextField.getText().contains(".") && ".".equals(ch))){
+                        resultTextField.appendText(ch);
+                    }
                 }
             }
         } catch (NumberFormatException e) {
@@ -94,21 +104,25 @@ public class FXMLDocumentController implements Initializable {
     }
     
     private void setResult(Double value){
-       resultTextField.setText(String.valueOf(value));
+        DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.##########", otherSymbols);
+       resultTextField.setText(df.format(value));
     }
     
     public void setActiveOperator (Button btn) {
         if (btn == null) {
-            lastActiveOperator.getStyleClass().remove("active");
-            lastActiveOperator.getStyleClass().add("inactive");
-            lastActiveOperator = null;
+            if (lastActiveOperatorBtn != null){
+                lastActiveOperatorBtn.getStyleClass().remove("active");
+                lastActiveOperatorBtn.getStyleClass().add("inactive");
+                lastActiveOperatorBtn = null;
+            }
         } else {
-            if(lastActiveOperator != null) {
-                lastActiveOperator.getStyleClass().remove("active");
-                lastActiveOperator.getStyleClass().add("inactive");
+            if(lastActiveOperatorBtn != null) {
+                lastActiveOperatorBtn.getStyleClass().remove("active");
+                lastActiveOperatorBtn.getStyleClass().add("inactive");
             }
             btn.getStyleClass().add("active");
-            lastActiveOperator = btn;
+            lastActiveOperatorBtn = btn;
         }
     }
     
@@ -119,6 +133,7 @@ public class FXMLDocumentController implements Initializable {
         } else {
             if (curExpr.isComplete()) {
                 try {
+                    lastExpr = curExpr;
                     double exprResult = curExpr.execute();
                     setResult(exprResult);
                     if (OP == Operadores.EQUALS) {
@@ -131,8 +146,16 @@ public class FXMLDocumentController implements Initializable {
                 }
             } else if (curExpr.hasLeft()) {
                 curExpr.setRight(new Entry(getResult()));
+                resolveExpression(OP);
             } else {
-                curExpr.setOperador(OP);
+                if (OP == Operadores.EQUALS && lastExpr != null) {
+                    curExpr.setOperador(lastExpr.getOperador());
+                    curExpr.setRight(lastExpr.getRight());
+                    resolveExpression(OP);
+                } else {
+                    curExpr.setLeft(new Entry(getResult()));
+                    curExpr.setOperador(OP);
+                }
             }
         }
     }
@@ -224,6 +247,7 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     void handleEquals(ActionEvent event) {
         resolveExpression(Operadores.EQUALS);
+        setActiveOperator(null);
     }
 
     @FXML

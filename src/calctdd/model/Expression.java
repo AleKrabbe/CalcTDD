@@ -37,21 +37,21 @@ public class Expression {
     
     public double execute() throws ExpressionNotCompleteException{
         double result = 0;
-        if (left == null || right == null || operador == null) {
+        if (getLeft() == null || getRight() == null || getOperador() == null) {
             throw new ExpressionNotCompleteException("Expressao incompleta");
         } else {
-            switch(operador) {
+            switch(getOperador()) {
                 case SUM:
-                    result = left.getValor() + right.getValor();
+                    result = getLeft().getValor() + getRight().getValor();
                     break;
                 case SUB:
-                    result = left.getValor() - right.getValor();
+                    result = getLeft().getValor() - getRight().getValor();
                     break;
                 case DIV:
-                    result = left.getValor() / right.getValor();
+                    result = getLeft().getValor() / getRight().getValor();
                     break;
                 case MUL:
-                    result = left.getValor() * right.getValor();
+                    result = getLeft().getValor() * getRight().getValor();
                     break;
             }
         }
@@ -59,7 +59,7 @@ public class Expression {
     }
     
     public boolean isComplete() {
-        if (left == null || right == null || operador == null) {
+        if (getLeft() == null || getRight() == null || getOperador() == null) {
             return false;
         } else {
             return true;
@@ -67,10 +67,10 @@ public class Expression {
     }
     
     public boolean hasLeft() {
-        if (left == null) {
-            return false;
-        } else {
+        if (getLeft() != null && getOperador() != null) {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -84,6 +84,18 @@ public class Expression {
 
     public void setOperador(Operadores operador) {
         this.operador = operador;
+    }
+    
+    public Entry getLeft() {
+        return left;
+    }
+
+    public Entry getRight() {
+        return right;
+    }
+
+    public Operadores getOperador() {
+        return operador;
     }
     
     

@@ -1,15 +1,15 @@
 package CalcTDDTests;
 
 import calctdd.controller.FXMLDocumentController;
+import calctdd.model.Entry;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 
 /**
- *
  * @author Alexandre
  */
-public class digitsTests {
+public class CalcTDDTests {
     
     private static FXMLDocumentController controller;
     
@@ -18,9 +18,15 @@ public class digitsTests {
         controller = new FXMLDocumentController();
     }
     
-//    @Test
-//    public void testPressingOne() {
-//        assertEquals(controller.getResult(), controller.handleDigitOnePress(null));
-//    }
+    @Test
+    public void testNewEntry() {
+        Entry operando = new Entry(10);
+        assertEquals(10, operando.getValor());
+    }
     
+    @Test
+    public void testNewLeftExpression() {
+        Entry operando = new Entry(9);
+        
+    }
 }

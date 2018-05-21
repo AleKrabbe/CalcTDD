@@ -1,7 +1,12 @@
 package calctdd.controller;
 
+import calctdd.exceptions.ExpressionNotCompleteException;
+import calctdd.model.Entry;
+import calctdd.model.Expression;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,7 +16,6 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.Region;
 
 /**
- *
  * @author Alexandre
  */
 public class FXMLDocumentController implements Initializable {
@@ -30,14 +34,24 @@ public class FXMLDocumentController implements Initializable {
     private Button divBtn;
     @FXML
     private Button backSpaceBtn;
-
+    
+    public static enum Operadores {
+        SUM, DIV, SUB, MUL, EQUALS;
+    }
+    
+    private Button lastActiveOperator;
+    private Expression curExpr;
+    private boolean shouldResetTextField;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        lastActiveOperator = null;
+        curExpr = null;
+        shouldResetTextField = false;
         initializeButtonIconsSVG();
         resultTextField.setText("0");
         resultTextField.setTextFormatter(new TextFormatter<>(change -> 
-            change.getControlNewText().length() <= 13 ? change : null));
+            change.getControlNewText().length() <= 10 ? change : null));
     }
     
     private void initializeButtonIconsSVG(){
@@ -59,19 +73,68 @@ public class FXMLDocumentController implements Initializable {
     
     private void appenToResult(String ch){
         try {
-            int result = Integer.parseInt(resultTextField.getText());
+            double result = Double.parseDouble(resultTextField.getText());
             if(result == 0){
                 resultTextField.setText(ch);
             } else {
-                resultTextField.appendText(ch);
+                if (shouldResetTextField) {
+                    resultTextField.setText(ch);
+                    shouldResetTextField = false;
+                } else {
+                    resultTextField.appendText(ch);
+                }
             }
         } catch (NumberFormatException e) {
-            resultTextField.appendText(ch);
+            System.err.println("Not able to convert result into string.");
         }        
     }
     
-    public int getResult(){
-        return Integer.parseInt(resultTextField.getText());
+    public double getResult(){
+        return Double.parseDouble(resultTextField.getText());
+    }
+    
+    private void setResult(Double value){
+       resultTextField.setText(String.valueOf(value));
+    }
+    
+    public void setActiveOperator (Button btn) {
+        if (btn == null) {
+            lastActiveOperator.getStyleClass().remove("active");
+            lastActiveOperator.getStyleClass().add("inactive");
+            lastActiveOperator = null;
+        } else {
+            if(lastActiveOperator != null) {
+                lastActiveOperator.getStyleClass().remove("active");
+                lastActiveOperator.getStyleClass().add("inactive");
+            }
+            btn.getStyleClass().add("active");
+            lastActiveOperator = btn;
+        }
+    }
+    
+    public void resolveExpression(Operadores OP) {
+        shouldResetTextField = true;
+        if (curExpr == null) {
+            curExpr = new Expression(new Entry(getResult()), OP);
+        } else {
+            if (curExpr.isComplete()) {
+                try {
+                    double exprResult = curExpr.execute();
+                    setResult(exprResult);
+                    if (OP == Operadores.EQUALS) {
+                        curExpr = new Expression(new Entry(getResult()));
+                    } else {
+                        curExpr = new Expression(new Entry(getResult()), OP);
+                    }
+                } catch (ExpressionNotCompleteException ex) {
+                    Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if (curExpr.hasLeft()) {
+                curExpr.setRight(new Entry(getResult()));
+            } else {
+                curExpr.setOperador(OP);
+            }
+        }
     }
     
     @FXML
@@ -80,7 +143,7 @@ public class FXMLDocumentController implements Initializable {
     }
             
     @FXML
-    public void handleDigitOnePress(ActionEvent event) {
+    public void handleDigitOnePress() {
         appenToResult("1");
     }
             
@@ -126,7 +189,7 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     void handleComma(ActionEvent event) {
-        appenToResult(",");
+        appenToResult(".");
     }
     
     @FXML
@@ -136,27 +199,31 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     void handleDivision(ActionEvent event) {
-        System.out.println("Need to implement");
+        setActiveOperator(divBtn);
+        resolveExpression(Operadores.DIV);
     }
 
     @FXML
     void handleMultiplication(ActionEvent event) {
-        System.out.println("Need to implement");
+        setActiveOperator(multBtn);
+        resolveExpression(Operadores.MUL);
     }
 
     @FXML
     void handleSubtraction(ActionEvent event) {
-        System.out.println("Need to implement");
+        setActiveOperator(minusBtn);
+        resolveExpression(Operadores.SUB);
     }    
     
     @FXML
     void handleAddition(ActionEvent event) {
-        System.out.println("Need to implement");
+        setActiveOperator(plusBtn);
+        resolveExpression(Operadores.SUM);
     }
     
     @FXML
     void handleEquals(ActionEvent event) {
-        System.out.println("Need to implement");
+        resolveExpression(Operadores.EQUALS);
     }
 
     @FXML
